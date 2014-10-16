@@ -1,0 +1,11 @@
+.ui-droppable.ui-state-default, 
+.ui-sortable.ui-state-default {
+	background: #EEEEEE;
+	border: solid 1px #CCCCCC;
+}
+
+.ui-droppable.ui-state-hover, 
+.ui-sortable.ui-state-hover {
+	background: #CCCCCC;
+	border: solid 1px #7F7F7F;
+}

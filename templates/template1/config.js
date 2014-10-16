@@ -11,6 +11,7 @@
 	"modules": [
 		{
 			"name": "Text/Image",
+			"title": "Text/Image",
 			"file": "modul_textImage.html"
 		}
 	
