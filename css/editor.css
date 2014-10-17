@@ -2,10 +2,41 @@
 .ui-sortable.ui-state-default {
 	background: #EEEEEE;
 	border: solid 1px #CCCCCC;
+	min-height: 100px;
 }
 
 .ui-droppable.ui-state-hover, 
 .ui-sortable.ui-state-hover {
 	background: #CCCCCC;
 	border: solid 1px #7F7F7F;
+	padding: 20px 0;
+}
+.templateHolder {
+	border: solid 1px #EEE;
+	padding: 20px;
+}
+.templateHolder .panel {
+	position: relative;
+}
+.templateHolder .panel-heading {
+	display: none;
+	position: absolute;
+	top:0;
+	left:0;
+	right:0;
+	background: #CCCCCC;
+	z-index: 5;
+	cursor: default;
+}
+.templateHolder .panel:hover .panel-heading {
+	display: block;
+}
+.templateHolder .panel-heading i {
+	cursor: pointer;
+}
+.templateHolder .panel-heading i.glyphicon-align-justify {
+	cursor: move;	
+}
+.templateHolder .panel-body {
+	padding: 0;
 }

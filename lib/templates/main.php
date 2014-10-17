@@ -15,7 +15,7 @@ include 'top_nav.php';
 			
 		</div>
 		
-		<div class="col-sm-9">
+		<div class="col-sm-9 templateHolder">
 		
 			<?php
 				include 'content.php';

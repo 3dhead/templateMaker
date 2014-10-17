@@ -46,22 +46,23 @@ $( "div[data-dropArea='true']" ).droppable({
 	hoverClass: "ui-state-hover",
 	accept: ":not(.ui-sortable-helper)",	
 	drop: function( event, ui ) {
+		 
 		$( this ).find( ".placeholder" ).remove();
 		$tt = ui.draggable;
 	var last = $('<div class="panel">'
       +'<div class="panel-heading">'
       +'  <div class="panel-title"><i class="glyphicon glyphicon-align-justify"></i> '+$tt.attr('data-title')
-      +'<div class="pull-right"><i class="glyphicon glyphicon-wrench"></i></div>'
+      +'  <div class="pull-right"><i class="glyphicon glyphicon-wrench"></i></div>'
+      +'  </div>'
       +'</div>'
-      +''
+      +'<div class="panel-body">'
+ 	  +'<div class="progress">'
+ 	  +' <div class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="45" aria-valuemin="0" aria-valuemax="100" style="width: 99%"></div>'
       +'</div>'
-      +'<div class="panel-body" contenteditable="true">'
-      +'  
       +'</div>'
-    +'</div>'); 
-    
-    jQuery('.panel-body', last).uniqueId();
-       
+      +'</div>'); 
+    // contenteditable="true"
+           
 	if($(this).find(".placeholder").length>0) { //add first element when cart is empty
 	    $(this).find(".placeholder").remove();
 	    last.appendTo( this );
@@ -82,8 +83,22 @@ $( "div[data-dropArea='true']" ).droppable({
 	        last.appendTo( this );
 	    }
     }   
+	
+	// get template
+	jQuery.ajax({
+		url: template_root+$tt.attr('data-template')
+	}).done(function(html) {
+		jQuery('.panel-body', last).html(html);
+		
+		jQuery('.panel-body [contenteditable=true]', last).each(function(index) {		  	
+		  	jQuery(this).uniqueId();
+		  	CKEDITOR.inline( jQuery(this).attr('id') );
+		});
+		
+	});		
 
-    	CKEDITOR.inline( jQuery('.panel-body', last).attr('id') );
+	
+    //	CKEDITOR.inline( jQuery('.panel-body', last).attr('id') );
 	}	
 }).sortable({
 	items: "div.panel",

@@ -14,8 +14,8 @@
 	<link href="lib/bootstrap/css/bootstrap.min.css" media="all" rel="stylesheet" type="text/css" />
 	<link href="css/editor.css" media="all" rel="stylesheet" type="text/css" />
 <script>
-	var template = <?php echo json_encode($tmpl); ?>
-	var templae_root = 'templates/';				
+	var template = <?php echo json_encode($tmpl); ?>;
+	var template_root = 'templates/<?php echo $tmpl['path']; ?>/';				
 </script>
 </head>
 <body>
