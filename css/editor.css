@@ -31,6 +31,9 @@
 .templateHolder .panel:hover .panel-heading {
 	display: block;
 }
+.templateHolder .panel.focus .panel-heading {
+	display: none;
+}
 .templateHolder .panel-heading i {
 	cursor: pointer;
 }

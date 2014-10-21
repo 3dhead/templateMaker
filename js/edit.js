@@ -52,7 +52,18 @@ $( "div[data-dropArea='true']" ).droppable({
 	var last = $('<div class="panel">'
       +'<div class="panel-heading">'
       +'  <div class="panel-title"><i class="glyphicon glyphicon-align-justify"></i> '+$tt.attr('data-title')
-      +'  <div class="pull-right"><i class="glyphicon glyphicon-wrench"></i></div>'
+      +'  <div class="pull-right btn-group">'
+ +'<button type="button" class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown">'
+ +'  <i class="glyphicon glyphicon-wrench"></i>'
+ +'<span class="caret"></span>'
+ +'</button>'
+ +'<ul class="dropdown-menu" role="menu">'
+ +'  <li><a href="#" class="show"><i class="glyphicon glyphicon glyphicon-eye-open"></i> Visible</a></li>'
+ +'  <li><a href="#" class="hide"><i class="glyphicon glyphicon-eye-close"></i> Hidden</a></li>'
+ +'  <li><a href="#" class="delete"><i class="glyphicon glyphicon-trash"></i> Remove</a></li>'
+ +'</ul>'
+
+      +'</div>'
       +'  </div>'
       +'</div>'
       +'<div class="panel-body">'
@@ -109,5 +120,15 @@ $( "div[data-dropArea='true']" ).droppable({
 		$( this ).removeClass( "ui-state-default" );
 	}
 });
+jQuery('.templateHolder').on('focus', '.panel-body', function(){
+	jQuery(this).parent().addClass('focus');
+});
+jQuery('.templateHolder').on('blur', '.panel-body', function(){
+	jQuery(this).parent().removeClass('focus');
+});
+jQuery('.templateHolder').on('click', 'a.delete', function(){
+	jQuery(this).closest('div.panel').fadeOut(function(){jQuery(this).remove();}) 
+});
+
 
 });
