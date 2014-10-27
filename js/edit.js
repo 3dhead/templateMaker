@@ -1,3 +1,21 @@
+function saveTemplate(){
+
+	jQuery('div.templateHolder .ui-droppable').each(function() { // block
+			
+			jQuery('.panel-body', this).each(function() { // block
+							
+				
+				
+			});	
+						
+	});	
+	
+}
+function loadTemplate(){
+	
+}
+
+
 //CKEDITOR.disableAutoInline = true;
 function loadEditor() {
 	    
@@ -32,24 +50,25 @@ function loadEditor() {
 		});	
 }
  
-$(document).ready(function(){
+jQuery(document).ready(function(){
 
 loadEditor();
 	
- $( "#modul_items li" ).draggable({
+ jQuery( "#modul_items li" ).draggable({
 	appendTo: "body",
 	helper: "clone"
  });
 
-$( "div[data-dropArea='true']" ).droppable({
+jQuery( "div[data-dropArea='true']" ).droppable({
 	activeClass: "ui-state-default",
 	hoverClass: "ui-state-hover",
 	accept: ":not(.ui-sortable-helper)",	
 	drop: function( event, ui ) {
 		 
-		$( this ).find( ".placeholder" ).remove();
+		jQuery( this ).find( ".placeholder" ).remove();
 		$tt = ui.draggable;
-	var last = $('<div class="panel">'
+				
+	var last = jQuery('<div class="panel">'
       +'<div class="panel-heading">'
       +'  <div class="panel-title"><i class="glyphicon glyphicon-align-justify"></i> '+$tt.attr('data-title')
       +'  <div class="pull-right btn-group">'
@@ -73,18 +92,21 @@ $( "div[data-dropArea='true']" ).droppable({
       +'</div>'
       +'</div>'); 
     // contenteditable="true"
+    
+    jQuery('.panel', last).attr('data-template', $tt.attr('data-template'));
+        
            
-	if($(this).find(".placeholder").length>0) { //add first element when cart is empty
-	    $(this).find(".placeholder").remove();
+	if(jQuery(this).find(".placeholder").length>0) { //add first element when cart is empty
+	    jQuery(this).find(".placeholder").remove();
 	    last.appendTo( this );
 	} else {
 
     var i=0; //used as flag to find out if element added or not
 
-	    $(this).children('div.panel').each(function() {
-	        if($(this).offset().top>=ui.offset.top) { //compare
+	    jQuery(this).children('div.panel').each(function() {
+	        if(jQuery(this).offset().top>=ui.offset.top) { //compare
 	               
-	          last.insertBefore( $(this) );
+	          last.insertBefore( jQuery(this) );
 	          i=1;   
 	          return false; //break loop
 	       }
@@ -129,6 +151,4 @@ jQuery('.templateHolder').on('blur', '.panel-body', function(){
 jQuery('.templateHolder').on('click', 'a.delete', function(){
 	jQuery(this).closest('div.panel').fadeOut(function(){jQuery(this).remove();}) 
 });
-
-
 });

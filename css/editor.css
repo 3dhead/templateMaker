@@ -3,13 +3,16 @@
 	background: #EEEEEE;
 	border: solid 1px #CCCCCC;
 	min-height: 100px;
+	padding: 20px 0;
 }
 
 .ui-droppable.ui-state-hover, 
 .ui-sortable.ui-state-hover {
 	background: #CCCCCC;
 	border: solid 1px #7F7F7F;
-	padding: 20px 0;
+}
+.cke_editable p:last-child{
+	min-height: 70px;
 }
 .templateHolder {
 	border: solid 1px #EEE;
@@ -17,22 +20,33 @@
 }
 .templateHolder .panel {
 	position: relative;
+	border-radius: 0;	
+	border: solid 1px #fff;
+	box-shadow: 0 0 0 0;
+}
+.templateHolder .panel:hover {
+	border: solid 1px #ddd;
 }
 .templateHolder .panel-heading {
-	display: none;
-	position: absolute;
-	top:0;
-	left:0;
-	right:0;
-	background: #CCCCCC;
-	z-index: 5;
-	cursor: default;
+    background: none repeat scroll 0 0 #cccccc;
+    border-radius: 0;
+    box-shadow: 0 0 3px #000;
+    cursor: default;
+    display: none;
+    left: 0;
+    padding: 6px 12px;
+    position: absolute;
+    top: 0;
+    z-index: 5;
 }
 .templateHolder .panel:hover .panel-heading {
 	display: block;
 }
 .templateHolder .panel.focus .panel-heading {
 	display: none;
+}
+.templateHolder .panel-heading .btn-group {
+	padding-left: 20px;
 }
 .templateHolder .panel-heading i {
 	cursor: pointer;
@@ -42,4 +56,19 @@
 }
 .templateHolder .panel-body {
 	padding: 0;
+}
+.ui-draggable-dragging {
+	list-style: none;
+	display: block;
+	background: #FFF;
+	border: solid 1px #EEE;
+	box-shadow: 0 0 3px #000;
+	padding: 5px;	
+}
+.ui-draggable-dragging a {
+	text-decoration: none;
+}
+.ui-sortable-placeholder {
+	visibility: visible !important;
+	background: #ddd;
 }

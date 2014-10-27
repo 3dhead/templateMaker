@@ -10,14 +10,14 @@
 	
 	"modules": [
 		{
-			"name": "Text/Image 2",
-			"title": "Text/Image",
-			"file": "modul_textImage2.html"
-		},	
-		{
 			"name": "Text/Image",
 			"title": "Text/Image",
 			"file": "modul_textImage.html"
+		},	
+		{
+			"name": "Text 2 columns",
+			"title": "Text 2 columns",
+			"file": "modul_text2col.html"
 		},
 		{
 			"name": "Image wide",
