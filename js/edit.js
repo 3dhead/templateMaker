@@ -6,6 +6,8 @@ function TemplateMaster (data) {
     // classes
     this.panelBody = '.panel-body';
     this.modulesHolder = '#modul_items';    
+    this.mediaHolderCount = '#mediaCollCount';
+    this.mediaHolder = '#mediaCollList>div';
     this.modulesPlaceholder = '.placeholder';
     this.templateHolder = '.templateHolder';
     
@@ -25,7 +27,7 @@ function TemplateMaster (data) {
 		 +'<span class="caret"></span>'
 		 +'</button>'
 		 +'<ul class="dropdown-menu" role="menu">'
-		 +'  <li><a href="#" class="show"><i class="glyphicon glyphicon glyphicon-eye-open"></i> Visible</a></li>'
+		 +'  <li><a href="#" class="showLater hide"><i class="glyphicon glyphicon glyphicon-eye-open"></i> Visible</a></li>'
 		 +'  <li><a href="#" class="hide"><i class="glyphicon glyphicon-eye-close"></i> Hidden</a></li>'
 		 +'  <li><a href="#" class="delete"><i class="glyphicon glyphicon-trash"></i> Remove</a></li>'
 		 +'</ul>'
@@ -61,7 +63,8 @@ function TemplateMaster (data) {
 			  	jQuery(this).removeAttr('id');
 			  	jQuery(this).uniqueId();
 			  	_this.addEditor(this);
-			});			
+			});
+			_this.initMediaDrop(block);			
 		});	
 	};	
 	
@@ -72,13 +75,15 @@ function TemplateMaster (data) {
     	
 		jQuery( this.modulesHolder+" li" ).draggable({
 			appendTo: "body",
-			helper: "clone"
+			helper: "clone",
+			revert: "invalid"
 		 });
 		
 		jQuery( "div[data-dropArea='true']" ).droppable({
 			activeClass: "ui-state-default",
 			hoverClass: "ui-state-hover",
-			accept: ":not(.ui-sortable-helper)",	
+			//accept: ":not(.ui-sortable-helper)",
+			accept: this.modulesHolder+" li",	
 			drop: function( event, ui ) {
 				 
 				jQuery( this ).find( _this.modulesPlaceholder ).remove();
@@ -119,6 +124,7 @@ function TemplateMaster (data) {
 			items: "div.panel",
 			handle: '.panel-heading .glyphicon-align-justify',
 			connectWith: "div[data-dropArea='true']",
+			revert: true,
 			sort: function() {
 				// gets added unintentionally by droppable interacting with sortable
 				// using connectWithSortable fixes this, but doesn't allow you to customize active/hoverClass options
@@ -126,6 +132,7 @@ function TemplateMaster (data) {
 			}
 		});    
 		
+	
 		// init
     	jQuery(_this.templateHolder).on('focus', _this.panelBody, function(){
 			jQuery(this).parent().addClass('focus');
@@ -196,6 +203,7 @@ function TemplateMaster (data) {
 			  		jQuery(this).uniqueId();
 				  	_this.addEditor(this);
 				});
+				_this.initMediaDrop(block);
 
 			});								
 		});
@@ -203,15 +211,49 @@ function TemplateMaster (data) {
     };    
     this.loadMedia = function(data) {
     	var _this = this;
-        jQuery.ajax( {
-        	url: 'index.php?action=mediaList',
-        	complete: function(data){
+        jQuery.getJSON('index.php?action=mediaList', [], function(data){
+        		
+        		jQuery(_this.mediaHolderCount).text(data.length);
+        		
         		jQuery.each(data, function( indexArea, mediImg ) { 
-        			jQuery('#mediaCollList>div').append('<img src="'+_this.media_root+mediImg+'" />');
+        			jQuery('#mediaCollList>div').append('<img width="100" class="img-thumbnail" src="'+_this.media_root+mediImg+'" />');
         		});	
-        	}
-        } );    		
+        		_this.initMediaList();
+        } );    	
+        
+        	
 	};	
+	
+	this.initMediaDrop = function(templ) {
+
+		 var _this = this;
+		 
+         jQuery( "img[data-mediaArea='true']", templ ).droppable({
+			activeClass: "ui-state-default",
+			hoverClass: "ui-state-hover",			
+			accept: this.mediaHolder+" img",	
+			drop: function( event, ui ) {
+												
+				jQuery(this).attr('src', jQuery(ui.draggable).attr('src') );
+				
+				
+			}
+		 });			
+
+	
+	},
+
+	this.initMediaList = function() {
+
+		// media 
+		jQuery( this.mediaHolder+" img" ).draggable({
+			appendTo: "body",
+			helper: "clone",
+			revert: "invalid"
+		 });	
+		 
+	};
+	
 }
 function TemplatePart () {
 	this.template = null;

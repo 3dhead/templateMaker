@@ -30,7 +30,7 @@ include 'top_nav.php';
 		</div>
 		
 		<div class="col-sm-9 templateHolder">
-			<button id="saveTemplate">Save</button>		
+			<button id="saveTemplate" class="btn btn-primary pull-right">Save</button>		
 		</div>	
 		
 	</div>	

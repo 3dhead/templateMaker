@@ -29,13 +29,13 @@
       <h4 class="panel-title">
         <i class="glyphicon glyphicon-picture"></i>
         <a data-toggle="collapse" data-parent="#accordion" href="#mediaCollList">
-          Media <span class="badge badge-info">4</span>
+          Media <span class="badge badge-info" id="mediaCollCount">0</span>
         </a>
       </h4>
     </div>
     <div id="mediaCollList" class="panel-collapse collapse">
       <div class="panel-body">
-        Media
+        
       </div>
     </div>
   </div>  

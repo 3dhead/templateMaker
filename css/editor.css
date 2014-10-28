@@ -72,3 +72,13 @@
 	visibility: visible !important;
 	background: #ddd;
 }
+.img-thumbnail {
+	 transition: none 0s ease 0s;
+}
+#mediaCollList img {
+	 margin: 0 5px 5px 0;
+	
+	 /* disable CSS transitions */
+	 transition: none 0s ease 0s;
+	 
+}
