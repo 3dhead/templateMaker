@@ -28,12 +28,12 @@
     <div class="panel-heading">
       <h4 class="panel-title">
         <i class="glyphicon glyphicon-picture"></i>
-        <a data-toggle="collapse" data-parent="#accordion" href="#collapseTwo">
+        <a data-toggle="collapse" data-parent="#accordion" href="#mediaCollList">
           Media <span class="badge badge-info">4</span>
         </a>
       </h4>
     </div>
-    <div id="collapseTwo" class="panel-collapse collapse">
+    <div id="mediaCollList" class="panel-collapse collapse">
       <div class="panel-body">
         Media
       </div>

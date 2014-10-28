@@ -22,6 +22,8 @@
 		loadEditor();
 		tm.initTemplate();
 		tm.loadTemplate(load);
+		tm.loadMedia();
+		 
 	});
 </script>
 </head>

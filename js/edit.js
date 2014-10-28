@@ -1,6 +1,7 @@
 function TemplateMaster (data) {
     this.data = data;
     this.template_root = 'templates/';
+    this.media_root = 'media/images/';
     
     // classes
     this.panelBody = '.panel-body';
@@ -200,7 +201,17 @@ function TemplateMaster (data) {
 		});
         
     };    
-    
+    this.loadMedia = function(data) {
+    	var _this = this;
+        jQuery.ajax( {
+        	url: 'index.php?action=mediaList',
+        	complete: function(data){
+        		jQuery.each(data, function( indexArea, mediImg ) { 
+        			jQuery('#mediaCollList>div').append('<img src="'+_this.media_root+mediImg+'" />');
+        		});	
+        	}
+        } );    		
+	};	
 }
 function TemplatePart () {
 	this.template = null;
