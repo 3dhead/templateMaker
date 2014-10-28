@@ -23,6 +23,17 @@ include 'top_nav.php';
 		</div>	
 		
 	</div>
+	<div class="row">
+		
+		<div class="col-sm-3">
+			
+		</div>
+		
+		<div class="col-sm-9 templateHolder">
+			<button id="saveTemplate">Save</button>		
+		</div>	
+		
+	</div>	
 </div>
 <?php
 include 'footer.php';

@@ -15,7 +15,14 @@
 	<link href="css/editor.css" media="all" rel="stylesheet" type="text/css" />
 <script>
 	var template = <?php echo json_encode($tmpl); ?>;
-	var template_root = 'templates/<?php echo $tmpl['path']; ?>/';				
+	var tm = new TemplateMaster(template);	
+	var template_root = 'templates/<?php echo $tmpl['path']; ?>/';
+	var load = <?php echo json_encode($load); ?>;
+	jQuery(document).ready(function(){
+		loadEditor();
+		tm.initTemplate();
+		tm.loadTemplate(load);
+	});
 </script>
 </head>
 <body>

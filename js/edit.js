@@ -1,20 +1,213 @@
-function saveTemplate(){
-
-	jQuery('div.templateHolder .ui-droppable').each(function() { // block
+function TemplateMaster (data) {
+    this.data = data;
+    this.template_root = 'templates/';
+    
+    // classes
+    this.panelBody = '.panel-body';
+    this.modulesHolder = '#modul_items';    
+    this.modulesPlaceholder = '.placeholder';
+    this.templateHolder = '.templateHolder';
+    
+    this.saveBtn = '#saveTemplate';
+        
+    // data
+    this.dataTemplate = 'data-template';
+    this.dataTitle = 'data-title';
+	
+	this.addModul = function(data) {
+			var l = jQuery('<div class="panel">'
+		      +'<div class="panel-heading">'
+		      +'  <div class="panel-title"><i class="glyphicon glyphicon-align-justify"></i> '+data.title
+		      +'  <div class="pull-right btn-group">'
+		 +'<button type="button" class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown">'
+		 +'  <i class="glyphicon glyphicon-wrench"></i>'
+		 +'<span class="caret"></span>'
+		 +'</button>'
+		 +'<ul class="dropdown-menu" role="menu">'
+		 +'  <li><a href="#" class="show"><i class="glyphicon glyphicon glyphicon-eye-open"></i> Visible</a></li>'
+		 +'  <li><a href="#" class="hide"><i class="glyphicon glyphicon-eye-close"></i> Hidden</a></li>'
+		 +'  <li><a href="#" class="delete"><i class="glyphicon glyphicon-trash"></i> Remove</a></li>'
+		 +'</ul>'
+		
+	     +'</div>'
+	     +'  </div>'
+	     +'</div>'
+	     +'<div class="panel-body">'
+	 	 +'<div class="progress">'
+	 	 +' <div class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="45" aria-valuemin="0" aria-valuemax="100" style="width: 99%"></div>'
+	     +'</div>'
+	     +'</div>'
+	     +'</div>'); 		
+		      
+		jQuery(this.panelBody, l).attr(this.dataTemplate, data.template).attr(this.dataTitle, data.title);		
+		return l;
+	};	
+	this.addEditor = function(itm) {
+		try {
+		CKEDITOR.inline( jQuery(itm).attr('id') );
+		} catch (e) {
 			
-			jQuery('.panel-body', this).each(function() { // block
-							
-				
-				
-			});	
-						
-	});	
+		} 
+	};	
 	
-}
-function loadTemplate(){
+	this.loadTemplateFile = function(template, block) {
+		var _this = this;		
+		jQuery.ajax({
+			url: this.template_root+template
+		}).done(function(html) {
+			jQuery('.panel-body', block).html(html);				
+			jQuery('.panel-body [contenteditable=true]', block).each(function(index) {		  	
+			  	jQuery(this).removeAttr('id');
+			  	jQuery(this).uniqueId();
+			  	_this.addEditor(this);
+			});			
+		});	
+	};	
 	
-}
+    this.initTemplate = function() {
+    	this.template_root = 'templates/'+this.data.path+'/';
+    	
+    	var _this = this;
+    	
+		jQuery( this.modulesHolder+" li" ).draggable({
+			appendTo: "body",
+			helper: "clone"
+		 });
+		
+		jQuery( "div[data-dropArea='true']" ).droppable({
+			activeClass: "ui-state-default",
+			hoverClass: "ui-state-hover",
+			accept: ":not(.ui-sortable-helper)",	
+			drop: function( event, ui ) {
+				 
+				jQuery( this ).find( _this.modulesPlaceholder ).remove();
+				$tt = ui.draggable;
+				var last = _this.addModul({
+					title: $tt.attr(_this.dataTitle),
+					template: $tt.attr(_this.dataTemplate)										
+				});	
 
+		    // contenteditable="true"
+		    	           
+			if(jQuery(this).find(_this.modulesPlaceholder).length>0) { //add first element when is empty
+			    jQuery(this).find(_this.modulesPlaceholder).remove();
+			    last.appendTo( this );
+			} else {
+		
+			    var i=0; //used as flag to find out if element added or not
+		
+			    jQuery(this).children('div.panel').each(function() {
+			        if(jQuery(this).offset().top>=ui.offset.top) { //compare
+			               
+			          last.insertBefore( jQuery(this) );
+			          i=1;   
+			          return false; //break loop
+			       }
+			    });
+		
+			    if(i!=1) { //if element dropped at the end of cart
+			        last.appendTo( this );
+			    }
+		    }   
+			
+			// get template
+			_this.loadTemplateFile($tt.attr(_this.dataTemplate), last);
+				
+		   }	
+		}).sortable({
+			items: "div.panel",
+			handle: '.panel-heading .glyphicon-align-justify',
+			connectWith: "div[data-dropArea='true']",
+			sort: function() {
+				// gets added unintentionally by droppable interacting with sortable
+				// using connectWithSortable fixes this, but doesn't allow you to customize active/hoverClass options
+				$( this ).removeClass( "ui-state-default" );
+			}
+		});    
+		
+		// init
+    	jQuery(_this.templateHolder).on('focus', _this.panelBody, function(){
+			jQuery(this).parent().addClass('focus');
+		});
+		jQuery(_this.templateHolder).on('blur', _this.panelBody, function(){
+			jQuery(this).parent().removeClass('focus');
+		});
+		jQuery(_this.templateHolder).on('click', 'a.delete', function(){
+			jQuery(this).closest('div.panel').fadeOut(function(){jQuery(this).remove();}) 
+		});
+		jQuery('body').on('click', _this.saveBtn, function(){
+			_this.saveTemplate();
+		});		
+    
+    };
+    
+    this.saveTemplate = function() {
+		
+		var _this = this;
+		var savePanels = Array(); 
+		
+		jQuery(this.templateHolder+' .ui-droppable').each(function() { // block
+				
+				var savePanel = Array();
+				
+				jQuery(_this.panelBody, this).each(function() { // block
+					
+					var saveData = new TemplatePart();
+					saveData.template = jQuery(this).attr(_this.dataTemplate);
+					saveData.title = jQuery(this).attr(_this.dataTitle);
+					saveData.content = jQuery(this).clone();
+					// clean content
+					jQuery('.cke_editable', saveData.content).removeAttr('id style title role aria-label spellcheck aria-describedby class');					
+					saveData.content = saveData.content.html();
+					saveData.visible = true;
+										
+					savePanel.push(saveData);
+				});	
+			savePanels.push(savePanel);				
+		});	
+        //console.log(savePanels);
+        
+        jQuery.ajax( {
+        	url: 'index.php?action=save',
+        	data: {'panels': savePanels},
+        	type: 'POST',
+        	complete: function(data){
+        		
+        	}
+        } );
+    };
+    this.loadTemplate = function(data) {
+		var _this = this;
+					
+		jQuery.each(data, function( indexDrop, listDrop ) { // drop areas
+			jQuery.each(listDrop, function( indexArea, listEdit ) { // modul
+				
+				var block = _this.addModul({
+					title: listEdit.title,
+					template: listEdit.template					
+				});
+												
+				block.appendTo(jQuery(_this.templateHolder+' [data-dropArea="true"]').eq(indexDrop));
+								
+				jQuery('.panel-body', block).html(listEdit.content);
+				jQuery('.panel-body [contenteditable=true]', block).each(function(index) {
+				  	jQuery(this).removeAttr('id');
+			  		jQuery(this).uniqueId();
+				  	_this.addEditor(this);
+				});
+
+			});								
+		});
+        
+    };    
+    
+}
+function TemplatePart () {
+	this.template = null;
+	this.title = null;
+	this.content = '';
+	this.visible = true;
+}
 
 //CKEDITOR.disableAutoInline = true;
 function loadEditor() {
@@ -32,7 +225,6 @@ function loadEditor() {
 				// execution. This makes it possible to change the
 				// configurations before the editor initialization takes place.
 				editor.on( 'configLoaded', function() {
-
 					// Remove unnecessary plugins to make the editor simpler.
 					editor.config.removePlugins = 'colorbutton,find,flash,font,' +
 						'forms,iframe,image,newpage,removeformat,' +
@@ -49,106 +241,4 @@ function loadEditor() {
 			}
 		});	
 }
- 
-jQuery(document).ready(function(){
 
-loadEditor();
-	
- jQuery( "#modul_items li" ).draggable({
-	appendTo: "body",
-	helper: "clone"
- });
-
-jQuery( "div[data-dropArea='true']" ).droppable({
-	activeClass: "ui-state-default",
-	hoverClass: "ui-state-hover",
-	accept: ":not(.ui-sortable-helper)",	
-	drop: function( event, ui ) {
-		 
-		jQuery( this ).find( ".placeholder" ).remove();
-		$tt = ui.draggable;
-				
-	var last = jQuery('<div class="panel">'
-      +'<div class="panel-heading">'
-      +'  <div class="panel-title"><i class="glyphicon glyphicon-align-justify"></i> '+$tt.attr('data-title')
-      +'  <div class="pull-right btn-group">'
- +'<button type="button" class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown">'
- +'  <i class="glyphicon glyphicon-wrench"></i>'
- +'<span class="caret"></span>'
- +'</button>'
- +'<ul class="dropdown-menu" role="menu">'
- +'  <li><a href="#" class="show"><i class="glyphicon glyphicon glyphicon-eye-open"></i> Visible</a></li>'
- +'  <li><a href="#" class="hide"><i class="glyphicon glyphicon-eye-close"></i> Hidden</a></li>'
- +'  <li><a href="#" class="delete"><i class="glyphicon glyphicon-trash"></i> Remove</a></li>'
- +'</ul>'
-
-      +'</div>'
-      +'  </div>'
-      +'</div>'
-      +'<div class="panel-body">'
- 	  +'<div class="progress">'
- 	  +' <div class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="45" aria-valuemin="0" aria-valuemax="100" style="width: 99%"></div>'
-      +'</div>'
-      +'</div>'
-      +'</div>'); 
-    // contenteditable="true"
-    
-    jQuery('.panel', last).attr('data-template', $tt.attr('data-template'));
-        
-           
-	if(jQuery(this).find(".placeholder").length>0) { //add first element when cart is empty
-	    jQuery(this).find(".placeholder").remove();
-	    last.appendTo( this );
-	} else {
-
-    var i=0; //used as flag to find out if element added or not
-
-	    jQuery(this).children('div.panel').each(function() {
-	        if(jQuery(this).offset().top>=ui.offset.top) { //compare
-	               
-	          last.insertBefore( jQuery(this) );
-	          i=1;   
-	          return false; //break loop
-	       }
-	    });
-
-	    if(i!=1) { //if element dropped at the end of cart
-	        last.appendTo( this );
-	    }
-    }   
-	
-	// get template
-	jQuery.ajax({
-		url: template_root+$tt.attr('data-template')
-	}).done(function(html) {
-		jQuery('.panel-body', last).html(html);
-		
-		jQuery('.panel-body [contenteditable=true]', last).each(function(index) {		  	
-		  	jQuery(this).uniqueId();
-		  	CKEDITOR.inline( jQuery(this).attr('id') );
-		});
-		
-	});		
-
-	
-    //	CKEDITOR.inline( jQuery('.panel-body', last).attr('id') );
-	}	
-}).sortable({
-	items: "div.panel",
-	handle: '.panel-heading .glyphicon-align-justify',
-	sort: function() {
-		// gets added unintentionally by droppable interacting with sortable
-		// using connectWithSortable fixes this, but doesn't allow you to customize active/hoverClass options
-		$( this ).removeClass( "ui-state-default" );
-	}
-});
-jQuery('.templateHolder').on('focus', '.panel-body', function(){
-	jQuery(this).parent().addClass('focus');
-});
-jQuery('.templateHolder').on('blur', '.panel-body', function(){
-	jQuery(this).parent().removeClass('focus');
-});
-jQuery('.templateHolder').on('click', 'a.delete', function(){
-	jQuery(this).closest('div.panel').fadeOut(function(){jQuery(this).remove();}) 
-});
-});

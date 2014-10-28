@@ -14,10 +14,11 @@ $tmpl = $tem->getTemplateData($edit);
 
 switch (isset($_GET['action']) ? $_GET['action'] : '') {
 	case 'save':
-		
+		file_put_contents('test.txt', json_encode($_POST['panels']));
+		exit;
 	break;	
 	default:
-			
+	$load = json_decode(file_get_contents('test.txt'));		
 	include 'lib/templates/main.php';
 					
 	break;

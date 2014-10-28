@@ -11,7 +11,7 @@
 	background: #CCCCCC;
 	border: solid 1px #7F7F7F;
 }
-.cke_editable p:last-child{
+.cke_editable p:only-child{
 	min-height: 70px;
 }
 .templateHolder {
