@@ -144,12 +144,17 @@ function TemplateMaster (data) {
 			jQuery(this).closest('div.panel').fadeOut(function(){jQuery(this).remove();}) 
 		});
 		jQuery('body').on('click', _this.saveBtn, function(){
-			_this.saveTemplate();
+			var btn = jQuery(this)
+    		btn.button('loading')
+    					
+			_this.saveTemplate(function(){
+				btn.button('reset');
+			});
 		});		
     
     };
     
-    this.saveTemplate = function() {
+    this.saveTemplate = function(callBack) {
 		
 		var _this = this;
 		var savePanels = Array(); 
@@ -180,7 +185,7 @@ function TemplateMaster (data) {
         	data: {'panels': savePanels},
         	type: 'POST',
         	complete: function(data){
-        		
+        		if(callBack) callBack.call();
         	}
         } );
     };
