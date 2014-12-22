@@ -3,11 +3,7 @@
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
-
 $edit = 0;
-
-
-
 switch (isset($_GET['action']) ? $_GET['action'] : '') {
 	case 'mediaList':
 		

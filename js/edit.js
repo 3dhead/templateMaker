@@ -1,22 +1,28 @@
-function TemplateMaster (data) {
+function TemplateMaster (data, tmpl_root, save_url) {
     this.data = data;
-    this.template_root = 'templates/';
+    this.template_root = tmpl_root;
+    this.save_url = save_url;
+    
     this.media_root = 'media/images/';
     
     // classes
     this.panelBody = '.panel-body';
     this.modulesHolder = '#modul_items';    
     this.mediaHolderCount = '#mediaCollCount';
-    this.mediaHolder = '#mediaCollList>div';
+    this.mediaHolder = '#wj-images-quick';
     this.modulesPlaceholder = '.placeholder';
-    this.templateHolder = '.templateHolder';
+    this.templateHolder = '#wysija_body';
     
     this.saveBtn = '#saveTemplate';
+    this.deleteBtn = 'a.deleteItm';
         
     // data
     this.dataTemplate = 'data-template';
     this.dataTitle = 'data-title';
 	
+	// tmp
+	this.editTarget = false;
+		
 	this.addModul = function(data) {
 			var l = jQuery('<div class="panel">'
 		      +'<div class="panel-heading">'
@@ -26,10 +32,12 @@ function TemplateMaster (data) {
 		 +'  <i class="glyphicon glyphicon-wrench"></i>'
 		 +'<span class="caret"></span>'
 		 +'</button>'
-		 +'<ul class="dropdown-menu" role="menu">'
-		 +'  <li><a href="#" class="showLater hide"><i class="glyphicon glyphicon glyphicon-eye-open"></i> Visible</a></li>'
-		 +'  <li><a href="#" class="hide"><i class="glyphicon glyphicon-eye-close"></i> Hidden</a></li>'
-		 +'  <li><a href="#" class="delete"><i class="glyphicon glyphicon-trash"></i> Remove</a></li>'
+		 +'<ul class="dropdown-menu" role="menus">'
+		 +'  <li><a href="#" class="editLink hide"><i class="glyphicon glyphicon-link"></i> Link</a></li>'
+		
+		// +'  <li><a href="#" class="showLater hide"><i class="glyphicon glyphicon glyphicon-eye-open"></i> Visible</a></li>'
+		// +'  <li><a href="#" class="hide"><i class="glyphicon glyphicon-eye-close"></i> Hidden</a></li>'
+		 +'  <li><a href="#" class="deleteItm"><i class="glyphicon glyphicon-trash"></i> Remove</a></li>'
 		 +'</ul>'
 		
 	     +'</div>'
@@ -54,22 +62,27 @@ function TemplateMaster (data) {
 	};	
 	
 	this.loadTemplateFile = function(template, block) {
-		var _this = this;		
+		var _this = this;
+				
 		jQuery.ajax({
 			url: this.template_root+template
 		}).done(function(html) {
 			jQuery('.panel-body', block).html(html);				
-			jQuery('.panel-body [contenteditable=true]', block).each(function(index) {		  	
+			jQuery('.panel-body [contenteditable="true"]', block).each(function(index) {		  	
 			  	jQuery(this).removeAttr('id');
-			  	jQuery(this).uniqueId();
+			  	jQuery(this).uniqueId();			  	
 			  	_this.addEditor(this);
 			});
+			if(jQuery('.panel-body [data-hasLink="true"]', block).length) {
+				jQuery('a.editLink', block).removeClass('hide');
+			}
+			
 			_this.initMediaDrop(block);			
 		});	
 	};	
 	
     this.initTemplate = function() {
-    	this.template_root = 'templates/'+this.data.path+'/';
+    	//this.template_root = 'templates/'+this.data.path+'/';
     	
     	var _this = this;
     	
@@ -128,30 +141,67 @@ function TemplateMaster (data) {
 			sort: function() {
 				// gets added unintentionally by droppable interacting with sortable
 				// using connectWithSortable fixes this, but doesn't allow you to customize active/hoverClass options
-				$( this ).removeClass( "ui-state-default" );
+				jQuery( this ).removeClass( "ui-state-default" );
 			}
 		});    
-		
-	
-		// init
+
+
+		// init	
+		jQuery(_this.templateHolder).on('click', 'button.dropdown-toggle', function(){
+			jQuery(this).parent().toggleClass('open');
+		});			
+		jQuery(_this.templateHolder).on('click', _this.deleteBtn, function(){	
+			jQuery(this).parent().toggleClass('open');										
+			jQuery(this).closest('div.panel').fadeOut(function(){jQuery(this).remove();})
+			
+		});		
     	jQuery(_this.templateHolder).on('focus', _this.panelBody, function(){
 			jQuery(this).parent().addClass('focus');
 		});
 		jQuery(_this.templateHolder).on('blur', _this.panelBody, function(){
 			jQuery(this).parent().removeClass('focus');
 		});
-		jQuery(_this.templateHolder).on('click', 'a.delete', function(){
-			jQuery(this).closest('div.panel').fadeOut(function(){jQuery(this).remove();}) 
-		});
+
 		jQuery('body').on('click', _this.saveBtn, function(){
-			var btn = jQuery(this)
-    		btn.button('loading')
+			var btn = jQuery(this);
+    		btn.button('loading');
     					
 			_this.saveTemplate(function(){
 				btn.button('reset');
 			});
 		});		
-    
+		jQuery(_this.templateHolder).on('click', 'a.editLink', function(){
+			jQuery(this).parent().parent().parent().toggleClass('open');
+			_this.editTarget = jQuery(this).closest('.panel');
+			
+			if(jQuery('span[data-haslink="true"]', this.editTarget).length) {
+												
+				var ldef = jQuery('span[data-haslink="true"]', _this.editTarget).eq(0).attr('data-haslinkdefault');								
+				var src = jQuery('span[data-haslink="true"]', _this.editTarget).eq(0).attr('href');
+				
+				if(typeof(src)=='undefined') {
+					src = ldef; 
+				}
+				jQuery('#editorLink').val(src);				
+				jQuery('#myModal').modal({});
+							
+			} 
+			return false;
+						
+		});	
+		
+		jQuery('#myModal').on('click', '.btn-primary', function(){
+			jQuery('span[data-haslink="true"]', _this.editTarget).attr('href', jQuery('#editorLink').val());
+			jQuery('#myModal').modal('hide');
+		});	
+		/*
+		jQuery(_this.templateHolder).on('click', 'span[data-haslink="true"]', function(e){
+			e.preventDefault();
+			return false;
+		});
+		*/		
+  // $("b").changeElementType("h1");
+    	
     };
     
     this.saveTemplate = function(callBack) {
@@ -159,7 +209,7 @@ function TemplateMaster (data) {
 		var _this = this;
 		var savePanels = Array(); 
 		
-		jQuery(this.templateHolder+' .ui-droppable').each(function() { // block
+		jQuery(this.templateHolder+' [data-dropArea="true"]').each(function() { // block
 				
 				var savePanel = Array();
 				
@@ -169,9 +219,11 @@ function TemplateMaster (data) {
 					saveData.template = jQuery(this).attr(_this.dataTemplate);
 					saveData.title = jQuery(this).attr(_this.dataTitle);
 					saveData.content = jQuery(this).clone();
+					
 					// clean content
 					jQuery('.cke_editable', saveData.content).removeAttr('id style title role aria-label spellcheck aria-describedby class');					
-					saveData.content = saveData.content.html();
+										
+					saveData.content = saveData.content.html();					
 					saveData.visible = true;
 										
 					savePanel.push(saveData);
@@ -179,19 +231,23 @@ function TemplateMaster (data) {
 			savePanels.push(savePanel);				
 		});	
         //console.log(savePanels);
-        
+      
         jQuery.ajax( {
         	url: 'index.php?action=save',
-        	data: {'panels': savePanels},
+        	data: {
+        		'panels': savePanels
+        	},
         	type: 'POST',
         	complete: function(data){
         		if(callBack) callBack.call();
         	}
         } );
+
+       return savePanels;
     };
     this.loadTemplate = function(data) {
 		var _this = this;
-					
+
 		jQuery.each(data, function( indexDrop, listDrop ) { // drop areas
 			jQuery.each(listDrop, function( indexArea, listEdit ) { // modul
 				
@@ -201,13 +257,18 @@ function TemplateMaster (data) {
 				});
 												
 				block.appendTo(jQuery(_this.templateHolder+' [data-dropArea="true"]').eq(indexDrop));
-								
+				
 				jQuery('.panel-body', block).html(listEdit.content);
-				jQuery('.panel-body [contenteditable=true]', block).each(function(index) {
+				jQuery('.panel-body [contenteditable="true"]', block).each(function(index) {
 				  	jQuery(this).removeAttr('id');
 			  		jQuery(this).uniqueId();
+			  		
 				  	_this.addEditor(this);
 				});
+				if(jQuery('.panel-body [data-hasLink="true"]', block).length) {
+					jQuery('a.editLink', block).removeClass('hide');
+				}				
+				
 				_this.initMediaDrop(block);
 
 			});								
@@ -226,6 +287,7 @@ function TemplateMaster (data) {
         		_this.initMediaList();
         } );    	
         
+       this.initMediaList();
         	
 	};	
 	
@@ -233,15 +295,14 @@ function TemplateMaster (data) {
 
 		 var _this = this;
 		 
-         jQuery( "img[data-mediaArea='true']", templ ).droppable({
+         jQuery( "img[data-mediaarea='true']", templ ).droppable({
 			activeClass: "ui-state-default",
 			hoverClass: "ui-state-hover",			
 			accept: this.mediaHolder+" img",	
 			drop: function( event, ui ) {
 												
-				jQuery(this).attr('src', jQuery(ui.draggable).attr('src') );
-				
-				
+				jQuery(this).attr('src', jQuery(ui.draggable).attr('wysija_src') );
+												
 			}
 		 });			
 
@@ -263,7 +324,7 @@ function TemplateMaster (data) {
 function TemplatePart () {
 	this.template = null;
 	this.title = null;
-	this.content = '';
+	this.content = '';		
 	this.visible = true;
 }
 
